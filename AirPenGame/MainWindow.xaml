@@ -48,7 +48,7 @@
             <TextBlock Text="WYBIERZ TRYB" FontSize="30" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,20"/>
             <Button Content="Tryb 1: Szybkość reakcji" FontSize="20" Padding="20,10" Margin="5" Click="StartVariant1_Click"/>
             <Button Content="Tryb 2: Strzałki kierunkowe" FontSize="20" Padding="20,10" Margin="5" Click="StartVariant2_Click"/>
-            <Button Content="Tryb 3: Celność (AimLab)" FontSize="20" Padding="20,10" Margin="5" Click="StartVariant3_Click"/>
+            <Button Content="Tryb 3: Celność" FontSize="20" Padding="20,10" Margin="5" Click="StartVariant3_Click"/>
             <Button Content="Wróć" FontSize="16" Padding="20,5" Margin="5,30,5,5" Background="Gray" Foreground="White" Click="BtnBackToMenu_Click"/>
         </StackPanel>
 
@@ -56,7 +56,7 @@
             <TextBlock Text="WYBIERZ RANKING" FontSize="30" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,20"/>
             <Button Content="Ranking 1: Szybkość reakcji" FontSize="20" Padding="20,10" Margin="5" Click="BtnLeaderboardVariant1_Click"/>
             <Button Content="Ranking 2: Strzałki kierunkowe" FontSize="20" Padding="20,10" Margin="5" Click="BtnLeaderboardVariant2_Click"/>
-            <Button Content="Ranking 3: Celność (AimLab)" FontSize="20" Padding="20,10" Margin="5" Click="BtnLeaderboardVariant3_Click"/>
+            <Button Content="Ranking 3: Celność" FontSize="20" Padding="20,10" Margin="5" Click="BtnLeaderboardVariant3_Click"/>
             <Button Content="Wróć" FontSize="16" Padding="20,5" Margin="5,30,5,5" Background="Gray" Foreground="White" Click="BtnBackToMenu_Click"/>
         </StackPanel>
 
@@ -76,14 +76,14 @@
             <Button Grid.Row="2" Content="Wróć" FontSize="20" Padding="20,10" Margin="0,20,0,0" HorizontalAlignment="Center" Click="BtnBackToLeaderboardSelection_Click"/>
         </Grid>
         <StackPanel x:Name="ResultButtonsPanel" Visibility="Collapsed" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,100">
-            <Button Content="Zapisz do Sali Chwały" FontSize="20" Padding="20,15" Margin="10" Background="#4BCE72" Foreground="White" FontWeight="Bold" Click="BtnShowSavePopup_Click"/>
+            <Button Content="Zapisz" FontSize="20" Padding="20,15" Margin="10" Background="#4BCE72" Foreground="White" FontWeight="Bold" Click="BtnShowSavePopup_Click"/>
             <Button Content="Powrót" FontSize="20" Padding="20,15" Margin="10" Background="Gray" Foreground="White" Click="BtnReturnFromGame_Click"/>
         </StackPanel>
 
         <Grid x:Name="SaveScorePopup" Visibility="Collapsed" Background="#CC000000">
             <Border Background="White" CornerRadius="10" Width="400" Height="250" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="WPISZ SIĘ DO SALI CHWAŁY!" FontSize="24" FontWeight="Bold" Foreground="#2B87D1" TextAlignment="Center" Margin="0,0,0,20"/>
+                    <TextBlock Text="ZAPISZ SWÓJ WYNIK" FontSize="24" FontWeight="Bold" Foreground="#2B87D1" TextAlignment="Center" Margin="0,0,0,20"/>
                     <TextBox x:Name="PlayerNameTextBox" FontSize="20" Padding="5" Margin="0,0,0,20" MaxLength="15" Background="#F0F0F0"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Content="Zapisz" FontSize="18" Padding="20,10" Margin="10,0" Background="#4BCE72" Foreground="White" Click="BtnConfirmSave_Click"/>
