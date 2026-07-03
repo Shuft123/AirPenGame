@@ -4,7 +4,7 @@
         Title="AirPen - Reflex Trainer" Height="600" Width="800" Loaded="Window_Loaded">
 
     <Grid x:Name="MainGrid" Background="#2B87D1" MouseLeftButtonDown="MainGrid_MouseLeftButtonDown">
-
+        <Canvas x:Name="AimLabCanvas" Visibility="Collapsed" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         <TextBlock x:Name="MessageText" 
                    Text="AirPen Reflex Trainer" 
                    FontSize="36" 
@@ -16,12 +16,7 @@
                    VerticalAlignment="Top"
                    Margin="20, 80, 20, 0"/>
 
-        <Viewbox x:Name="ArrowContainer" 
-         Visibility="Collapsed" 
-         Width="250" Height="250" 
-         Stretch="Uniform"
-         HorizontalAlignment="Center" 
-         VerticalAlignment="Center">
+        <Viewbox x:Name="ArrowContainer" Visibility="Collapsed" Width="250" Height="250" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Grid Width="100" Height="100">
                 <Grid.RenderTransform>
                     <RotateTransform x:Name="ArrowRotateTransform" Angle="0" CenterX="50" CenterY="50"/>
@@ -43,10 +38,59 @@
             </Grid>
         </Viewbox>
 
-        <StackPanel x:Name="MenuPanel" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,50">
-            <Button Content="Tryb 1: Szybkość reakcji" FontSize="20" Padding="15" Margin="10" Click="StartVariant1_Click"/>
-            <Button Content="Tryb 2: Strzałki kierunkowe" FontSize="20" Padding="15" Margin="10" Click="StartVariant2_Click"/>
+        <StackPanel x:Name="MainMenuPanel" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="MENU GŁÓWNE" FontSize="40" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+            <Button Content="Graj" FontSize="24" Padding="40,15" Margin="10" Click="BtnPlay_Click"/>
+            <Button Content="Ranking" FontSize="24" Padding="40,15" Margin="10" Click="BtnLeaderboard_Click"/>
         </StackPanel>
 
+        <StackPanel x:Name="GameSelectionPanel" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="WYBIERZ TRYB" FontSize="30" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+            <Button Content="Tryb 1: Szybkość reakcji" FontSize="20" Padding="20,10" Margin="5" Click="StartVariant1_Click"/>
+            <Button Content="Tryb 2: Strzałki kierunkowe" FontSize="20" Padding="20,10" Margin="5" Click="StartVariant2_Click"/>
+            <Button Content="Tryb 3: Celność (AimLab)" FontSize="20" Padding="20,10" Margin="5" Click="StartVariant3_Click"/>
+            <Button Content="Wróć" FontSize="16" Padding="20,5" Margin="5,30,5,5" Background="Gray" Foreground="White" Click="BtnBackToMenu_Click"/>
+        </StackPanel>
+
+        <StackPanel x:Name="LeaderboardSelectionPanel" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="WYBIERZ RANKING" FontSize="30" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+            <Button Content="Ranking 1: Szybkość reakcji" FontSize="20" Padding="20,10" Margin="5" Click="BtnLeaderboardVariant1_Click"/>
+            <Button Content="Ranking 2: Strzałki kierunkowe" FontSize="20" Padding="20,10" Margin="5" Click="BtnLeaderboardVariant2_Click"/>
+            <Button Content="Ranking 3: Celność (AimLab)" FontSize="20" Padding="20,10" Margin="5" Click="BtnLeaderboardVariant3_Click"/>
+            <Button Content="Wróć" FontSize="16" Padding="20,5" Margin="5,30,5,5" Background="Gray" Foreground="White" Click="BtnBackToMenu_Click"/>
+        </StackPanel>
+
+        <Grid x:Name="LeaderboardPanel" Visibility="Collapsed" Margin="50">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,10">
+                <TextBlock x:Name="LeaderboardTitle" Text="SALA CHWAŁY" FontSize="30" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+            </Grid>
+
+            <DataGrid x:Name="LeaderboardGrid" Grid.Row="1" AutoGenerateColumns="True" IsReadOnly="True" Background="White" FontSize="18" HeadersVisibility="Column" RowHeight="30"/>
+
+            <Button Grid.Row="2" Content="Wróć" FontSize="20" Padding="20,10" Margin="0,20,0,0" HorizontalAlignment="Center" Click="BtnBackToLeaderboardSelection_Click"/>
+        </Grid>
+        <StackPanel x:Name="ResultButtonsPanel" Visibility="Collapsed" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,100">
+            <Button Content="Zapisz do Sali Chwały" FontSize="20" Padding="20,15" Margin="10" Background="#4BCE72" Foreground="White" FontWeight="Bold" Click="BtnShowSavePopup_Click"/>
+            <Button Content="Powrót" FontSize="20" Padding="20,15" Margin="10" Background="Gray" Foreground="White" Click="BtnReturnFromGame_Click"/>
+        </StackPanel>
+
+        <Grid x:Name="SaveScorePopup" Visibility="Collapsed" Background="#CC000000">
+            <Border Background="White" CornerRadius="10" Width="400" Height="250" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="WPISZ SIĘ DO SALI CHWAŁY!" FontSize="24" FontWeight="Bold" Foreground="#2B87D1" TextAlignment="Center" Margin="0,0,0,20"/>
+                    <TextBox x:Name="PlayerNameTextBox" FontSize="20" Padding="5" Margin="0,0,0,20" MaxLength="15" Background="#F0F0F0"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Zapisz" FontSize="18" Padding="20,10" Margin="10,0" Background="#4BCE72" Foreground="White" Click="BtnConfirmSave_Click"/>
+                        <Button Content="Anuluj" FontSize="18" Padding="20,10" Margin="10,0" Background="Gray" Foreground="White" Click="BtnCancelSave_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Window>
