@@ -39,9 +39,12 @@ namespace AirPenGame
         private int aimLabTotalClicks = 0;
         private long lastHitTime = 0;
 
-        private readonly SolidColorBrush colorBlue = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2B87D1")!);
-        private readonly SolidColorBrush colorRed = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CE2636")!);
-        private readonly SolidColorBrush colorGreen = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4BCE72")!);
+        private readonly SolidColorBrush colorMenu = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F3F4F6")!);
+        private readonly SolidColorBrush colorRed = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF1A1A")!);
+        private readonly SolidColorBrush colorGreen = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00E64D")!);
+
+        private readonly SolidColorBrush colorTextDark = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#202020")!);
+        private readonly SolidColorBrush colorTextLight = Brushes.White;
 
         private long currentFinalScore = 0;
         private string dbFilePath = "scores.csv";
@@ -70,7 +73,7 @@ namespace AirPenGame
         private void ShowMainMenu()
         {
             currentState = GameState.MainMenu;
-            MainGrid.Background = colorBlue;
+            MainGrid.Background = colorMenu;
             MessageText.Text = "";
 
             MainMenuPanel.Visibility = Visibility.Visible;
@@ -158,6 +161,18 @@ namespace AirPenGame
 
             LeaderboardGrid.ItemsSource = entries;
         }
+        private void BtnQuitGame_Click(object sender, RoutedEventArgs e)
+        {
+            waitTimer.Stop();
+            aimLabTimer.Stop();
+            stopwatch.Stop();
+
+            AimLabCanvas.Visibility = Visibility.Collapsed;
+            AimLabCanvas.Children.Clear();
+
+            BtnQuitGame.Visibility = Visibility.Collapsed;
+            ShowMainMenu();
+        }
 
         private void StartVariant1_Click(object sender, RoutedEventArgs e) { currentVariant = 1; PrepareGame(); }
         private void StartVariant2_Click(object sender, RoutedEventArgs e) { currentVariant = 2; PrepareGame(); }
@@ -175,7 +190,9 @@ namespace AirPenGame
         private void ShowStartScreen()
         {
             currentState = GameState.StartScreen;
-            MainGrid.Background = colorBlue;
+            MainGrid.Background = colorMenu;
+            MessageText.Foreground = colorTextDark;
+            BtnQuitGame.Visibility = Visibility.Visible;
             ArrowContainer.Visibility = Visibility.Collapsed;
             ResultButtonsPanel.Visibility = Visibility.Collapsed;
             AimLabCanvas.Visibility = Visibility.Collapsed;
@@ -203,7 +220,8 @@ namespace AirPenGame
 
                 case GameState.WaitingForGreen:
                     waitTimer.Stop();
-                    MainGrid.Background = colorBlue;
+                    MainGrid.Background = colorMenu;
+                    MessageText.Foreground = colorTextDark;
                     MessageText.Text = "Za wcześnie!\nKliknij aby spróbować ponownie.";
                     currentState = GameState.StartScreen;
                     break;
@@ -240,7 +258,8 @@ namespace AirPenGame
 
             if (currentTrial < MaxTrials)
             {
-                MainGrid.Background = colorBlue;
+                MainGrid.Background = colorMenu;
+                MessageText.Foreground = colorTextDark;
                 ArrowContainer.Visibility = Visibility.Collapsed;
                 MessageText.Text = $"{time} ms\n\nKliknij aby kontynuować ({currentTrial}/{MaxTrials})";
                 currentState = GameState.StartScreen;
@@ -254,6 +273,7 @@ namespace AirPenGame
         private void ProcessInvalidTrial()
         {
             MainGrid.Background = colorRed;
+            MessageText.Foreground = colorTextLight;
             ArrowContainer.Visibility = Visibility.Collapsed;
             MessageText.Text = "ZŁY KIERUNEK!\nKliknij, aby ponowić tę próbę.";
             currentState = GameState.StartScreen;
@@ -263,6 +283,7 @@ namespace AirPenGame
         {
             currentState = GameState.WaitingForGreen;
             MainGrid.Background = colorRed;
+            MessageText.Foreground = colorTextLight;
             ArrowContainer.Visibility = Visibility.Collapsed;
             MessageText.Text = "Czekaj na zielony...";
 
@@ -276,6 +297,7 @@ namespace AirPenGame
             waitTimer.Stop();
             currentState = GameState.ReadyToClick;
             MainGrid.Background = colorGreen;
+            MessageText.Foreground = colorTextLight;
             MessageText.Text = "RUCH!";
 
             if (currentVariant == 2)
@@ -332,7 +354,7 @@ namespace AirPenGame
         private void StartAimLabPhase()
         {
             currentState = GameState.ReadyToClick;
-            MainGrid.Background = colorBlue;
+            MainGrid.Background = colorMenu;
             MessageText.Text = "";
             AimLabCanvas.Visibility = Visibility.Visible;
             AimLabCanvas.Children.Clear();
@@ -421,7 +443,7 @@ namespace AirPenGame
         private void ShowFinalResultsAimLab()
         {
             currentState = GameState.ResultScreen;
-            MainGrid.Background = colorBlue;
+            MainGrid.Background = colorMenu;
 
             long median = 0;
             if (trialTimesOnly.Count > 0)
@@ -440,12 +462,15 @@ namespace AirPenGame
 
             MessageText.Text = $"Koniec Czasu!\n\nZestrzelone: {aimLabHits}/{aimLabTotalClicks} ({accuracy}%)\nMEDIANA CZASU: {median} ms";
             ResultButtonsPanel.Visibility = Visibility.Visible;
+            BtnQuitGame.Visibility = Visibility.Collapsed;
         }
 
         private void ShowFinalResults()
         {
             currentState = GameState.ResultScreen;
-            MainGrid.Background = colorBlue;
+            MainGrid.Background = colorMenu;
+            MessageText.Foreground = colorTextDark;
+            BtnQuitGame.Visibility = Visibility.Collapsed;
             ArrowContainer.Visibility = Visibility.Collapsed;
 
             var sortedResults = trialTimesOnly.OrderBy(x => x).ToList();
@@ -455,6 +480,7 @@ namespace AirPenGame
             MessageText.Text = $"Koniec!\n\nTwoje czasy: {allTimes}\n\nMEDIANA: {currentFinalScore} ms";
 
             ResultButtonsPanel.Visibility = Visibility.Visible;
+            BtnQuitGame.Visibility = Visibility.Collapsed;
         }
 
         private void BtnReturnFromGame_Click(object sender, RoutedEventArgs e)
@@ -463,17 +489,20 @@ namespace AirPenGame
             currentState = GameState.GameSelection;
             GameSelectionPanel.Visibility = Visibility.Visible;
             MessageText.Text = "";
+            BtnQuitGame.Visibility = Visibility.Collapsed;
         }
 
         private void BtnShowSavePopup_Click(object sender, RoutedEventArgs e)
         {
             PlayerNameTextBox.Text = "";
             SaveScorePopup.Visibility = Visibility.Visible;
+            BtnQuitGame.Visibility = Visibility.Collapsed;
         }
 
         private void BtnCancelSave_Click(object sender, RoutedEventArgs e)
         {
             SaveScorePopup.Visibility = Visibility.Collapsed;
+            BtnQuitGame.Visibility = Visibility.Collapsed;
         }
 
         private void BtnConfirmSave_Click(object sender, RoutedEventArgs e)
@@ -490,6 +519,7 @@ namespace AirPenGame
 
             SaveScorePopup.Visibility = Visibility.Collapsed;
             ResultButtonsPanel.Visibility = Visibility.Collapsed;
+            BtnQuitGame.Visibility = Visibility.Collapsed;
 
             ShowMainMenu();
             MessageText.Text = "";
