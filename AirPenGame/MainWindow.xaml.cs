@@ -36,7 +36,6 @@ namespace AirPenGame
 
         private DispatcherTimer aimLabTimer;
         private int aimLabHits = 0;
-        private int aimLabMissed = 0;
         private int aimLabTotalClicks = 0;
         private long lastHitTime = 0;
 
@@ -137,15 +136,13 @@ namespace AirPenGame
                 {
                     if (long.TryParse(parts[1], out long score))
                     {
-                        string missed = parts.Length > 4 ? parts[4] : "-";
-                        string accuracy = parts.Length > 5 ? parts[5] : "-";
+                        string accuracy = parts.Length > 4 ? parts[4] : "-";
 
                         entries.Add(new ScoreEntry
                         {
                             Player = parts[0],
                             Score_ms = score,
                             Date = parts[3],
-                            Missed = missed,
                             Accuracy = accuracy
                         });
                     }
@@ -188,7 +185,7 @@ namespace AirPenGame
             else if (currentVariant == 2)
                 MessageText.Text = "Kiedy czerwone tło zmieni się na zielone zapoznaj się ze strzałką i kliknij w odpowiednim kierunku!\n\nKliknij gdziekolwiek aby zacząć.";
             else if (currentVariant == 3)
-                MessageText.Text = "Masz 30 sekund aby trafić jak najwięcej celów.\nCele znikną po 4 sekundach więc klikaj szybko ale dokładnie!\n\nKliknij gdziekolwiek aby zacząć.";
+                MessageText.Text = "Masz 30 sekund aby trafić jak najwięcej celów.\n\nKliknij gdziekolwiek aby zacząć.";
         }
 
         private void MainGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -357,13 +354,13 @@ namespace AirPenGame
 
         private void SpawnTarget()
         {
-            double size = random.Next(80, 130);
+            double size = random.Next(100, 140);
             double maxX = MainGrid.ActualWidth - size - 20;
             double maxY = MainGrid.ActualHeight - size - 20;
 
             if (maxX <= 0 || maxY <= 0) return;
 
-            double posX, posY;
+            double posX = 0, posY = 0;
             Rect newRect;
             bool isOverlapping;
             int attempts = 0;
@@ -389,19 +386,6 @@ namespace AirPenGame
             Ellipse target = new Ellipse { Width = size, Height = size, Fill = colorRed, Cursor = Cursors.Hand };
             target.MouseLeftButtonDown += Target_Click;
 
-            DispatcherTimer expireTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
-            expireTimer.Tick += (s, args) => {
-                expireTimer.Stop();
-                if (AimLabCanvas.Children.Contains(target))
-                {
-                    AimLabCanvas.Children.Remove(target);
-                    aimLabMissed++;
-                    SpawnTarget();
-                }
-            };
-            target.Tag = expireTimer;
-            expireTimer.Start();
-
             Canvas.SetLeft(target, posX);
             Canvas.SetTop(target, posY);
             AimLabCanvas.Children.Add(target);
@@ -412,8 +396,6 @@ namespace AirPenGame
             e.Handled = true;
             if (sender is Ellipse target)
             {
-                if (target.Tag is DispatcherTimer timer) timer.Stop();
-
                 aimLabHits++;
                 aimLabTotalClicks++;
                 long currentTime = stopwatch.ElapsedMilliseconds;
@@ -449,14 +431,14 @@ namespace AirPenGame
             }
 
             currentFinalScore = median;
-            double accuracy = 0;
 
+            double accuracy = 0;
             if (aimLabTotalClicks > 0)
             {
                 accuracy = Math.Round((double)aimLabHits / aimLabTotalClicks * 100, 1);
             }
 
-            MessageText.Text = $"Koniec Czasu!\n\nTrafienia: {aimLabHits}/{aimLabTotalClicks} ({accuracy}%)\nMEDIANA CZASU MIĘDZY TRAFIENIAMI: {median} ms";
+            MessageText.Text = $"Koniec Czasu!\n\nZestrzelone: {aimLabHits}/{aimLabTotalClicks} ({accuracy}%)\nMEDIANA CZASU: {median} ms";
             ResultButtonsPanel.Visibility = Visibility.Visible;
         }
 
@@ -509,7 +491,7 @@ namespace AirPenGame
             SaveScorePopup.Visibility = Visibility.Collapsed;
             ResultButtonsPanel.Visibility = Visibility.Collapsed;
 
-            LoadLeaderboard(currentVariant);
+            ShowMainMenu();
             MessageText.Text = "";
         }
 
@@ -521,7 +503,7 @@ namespace AirPenGame
                 if (variant == 3)
                 {
                     float acc = aimLabTotalClicks > 0 ? (float)Math.Round((float)aimLabHits / aimLabTotalClicks * 100, 1) : 0f;
-                    extraData = $"{aimLabMissed};{acc}";
+                    extraData = $"{acc}";
                 }
 
                 using (StreamWriter sw = File.AppendText(dbFilePath))
@@ -540,7 +522,6 @@ namespace AirPenGame
         public string Player { get; set; } = string.Empty;
         public long Score_ms { get; set; }
         public string Date { get; set; } = string.Empty;
-        public string Missed { get; set; } = "-";
         public string Accuracy { get; set; } = "-";
     }
 }
