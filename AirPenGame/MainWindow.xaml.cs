@@ -544,6 +544,11 @@ namespace AirPenGame
             }
             catch (Exception ex) { MessageBox.Show("Błąd zapisu: " + ex.Message); }
         }
+
+        private void BtnExitApp_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 
     public class ScoreEntry
